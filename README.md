@@ -16,6 +16,7 @@ A small FastAPI service built to demonstrate secure API design and an automated 
   - Secrets scanning with Gitleaks
   - SBOM generation with CycloneDX (downloadable artefact)
 - **Threat model:** STRIDE analysis in [THREAT_MODEL.md](THREAT_MODEL.md)
+- **Write-up:** [IDOR: breaking it in a lab, preventing it in code](docs/idor-writeup.md) connects the PortSwigger IDOR lab to the fix and tests in this repo.
 
 ## The vulnerable version and the fix
 
