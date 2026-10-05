@@ -17,6 +17,7 @@ A small FastAPI service built to demonstrate secure API design and an automated 
   - SBOM generation with CycloneDX (downloadable artefact)
 - **Threat model:** STRIDE analysis in [THREAT_MODEL.md](THREAT_MODEL.md)
 - **Write-up:** [IDOR: breaking it in a lab, preventing it in code](docs/idor-writeup.md) connects the PortSwigger IDOR lab to the fix and tests in this repo.
+- **Burp self-test:** [Attacking my own API](docs/burp-self-test.md). Nine Repeater and Intruder attacks, with results and findings.
 
 ## The vulnerable version and the fix
 
