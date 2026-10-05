@@ -1,9 +1,35 @@
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 app = FastAPI(title="Secure Notes API")
 bearer = HTTPBearer()
+
+# Security headers for a JSON API, following the OWASP REST Security Cheat Sheet.
+SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",  # no MIME sniffing of responses
+    "X-Frame-Options": "DENY",  # never render responses in a frame
+    "Cache-Control": "no-store",  # private notes must not be cached
+    "Referrer-Policy": "no-referrer",
+    # Browsers only honour HSTS over HTTPS; it takes effect once deployed behind TLS.
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+}
+API_CSP = "default-src 'none'; frame-ancestors 'none'"
+# The interactive docs load scripts and styles from a CDN, so they are exempt
+# from the strict API Content Security Policy.
+DOCS_PATHS = {"/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json"}
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    # Runs outside FastAPI's exception handling, so error responses
+    # (401, 404, 422) get the headers too.
+    response = await call_next(request)
+    for name, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(name, value)
+    if request.url.path not in DOCS_PATHS:
+        response.headers.setdefault("Content-Security-Policy", API_CSP)
+    return response
 
 # Demo data only. A real app would use a database and hashed, expiring tokens.
 TOKENS = {"demo-token-alice": "alice", "demo-token-bob": "bob"}
