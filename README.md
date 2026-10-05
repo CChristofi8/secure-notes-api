@@ -45,6 +45,7 @@ return note
 |---|---|---|---|
 | 2026-10-05 | Semgrep (`github-actions-mutable-action-tag`) | Four GitHub Actions used mutable tags (`@v4`, `@v5`, `@v2`). The owner of a tag can silently repoint it, which opens a supply-chain attack path. | Pinned every action to its full 40-character commit SHA, with the version kept in a comment. |
 | 2026-10-05 | Pipeline design | Pinning actions to commit SHAs stops them receiving updates, including security fixes. | Added Dependabot (`.github/dependabot.yml`) for GitHub Actions and pip. It opens weekly pull requests that update the SHA and version comment, and every update must pass this pipeline before it is merged. |
+| 2026-10-05 | Semgrep (`dependabot-missing-cooldown`) | Dependabot would propose package versions as soon as they were published. Newly released versions are the window in which malicious or broken releases do most harm. | Added a 7-day `cooldown` to each ecosystem, so updates are proposed only after a version has been public for a week. |
 | 2026-10-05 | Pipeline design | Installing Semgrep into the app's environment downgraded a dependency the app relies on (`opentelemetry-api`). | Each security tool now runs in its own virtual environment. |
 
 ## Run it

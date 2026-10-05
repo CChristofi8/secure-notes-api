@@ -6,9 +6,16 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Wait 7 days after a release before proposing it. Newly published
+    # versions are the window in which malicious or broken releases are
+    # usually caught and pulled.
+    cooldown:
+      default-days: 7
 
   # Keeps the pinned Python dependencies in requirements.txt up to date.
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
