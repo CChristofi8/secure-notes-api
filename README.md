@@ -15,6 +15,7 @@ A small FastAPI service built to demonstrate secure API design and an automated 
   - Dependency vulnerability scanning with pip-audit
   - Secrets scanning with Gitleaks
   - SBOM generation with CycloneDX (downloadable artefact)
+  - DAST with OWASP ZAP: the API is started in CI and actively scanned through its OpenAPI definition as an authenticated user (HTML and JSON report artefact)
 - **Threat model:** STRIDE analysis in [THREAT_MODEL.md](THREAT_MODEL.md)
 - **Write-up:** [IDOR: breaking it in a lab, preventing it in code](docs/idor-writeup.md) connects the PortSwigger IDOR lab to the fix and tests in this repo.
 - **Burp self-test:** [Attacking my own API](docs/burp-self-test.md). Nine Repeater and Intruder attacks, with results and findings.
@@ -48,6 +49,7 @@ return note
 | 2026-10-05 | Pipeline design | Pinning actions to commit SHAs stops them receiving updates, including security fixes. | Added Dependabot (`.github/dependabot.yml`) for GitHub Actions and pip. It opens weekly pull requests that update the SHA and version comment, and every update must pass this pipeline before it is merged. |
 | 2026-10-05 | Semgrep (`dependabot-missing-cooldown`) | Dependabot would propose package versions as soon as they were published. Newly released versions are the window in which malicious or broken releases do most harm. | Added a 7-day `cooldown` to each ecosystem, so updates are proposed only after a version has been public for a week. |
 | 2026-10-05 | Manual review (Burp self-test plan) | API responses had no security headers, only `content-type` and `content-length`. | Added middleware that sets `X-Content-Type-Options`, `X-Frame-Options`, `Cache-Control: no-store`, `Referrer-Policy`, HSTS, and a strict `Content-Security-Policy` on every response, including errors. The docs pages are exempt from the CSP. Covered by `tests/test_security_headers.py`. |
+| 2026-10-05 | OWASP ZAP (API scan, plugin 90004) | Responses had no `Cross-Origin-Resource-Policy` header, so other sites could embed them as cross-origin resources. The authenticated active scan found no injection, XSS, or SSRF issues. Its other two alerts were expected: non-storable content (intentional `no-store`) and 404s for probe URLs. | Added `Cross-Origin-Resource-Policy: same-origin` to the security headers middleware, covered by the existing header tests. |
 | 2026-10-05 | Pipeline design | Installing Semgrep into the app's environment downgraded a dependency the app relies on (`opentelemetry-api`). | Each security tool now runs in its own virtual environment. |
 
 ## Run it

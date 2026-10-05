@@ -11,6 +11,9 @@ SECURITY_HEADERS = {
     "X-Frame-Options": "DENY",  # never render responses in a frame
     "Cache-Control": "no-store",  # private notes must not be cached
     "Referrer-Policy": "no-referrer",
+    # Stops other sites embedding API responses as cross-origin resources
+    # (added after the OWASP ZAP scan flagged it).
+    "Cross-Origin-Resource-Policy": "same-origin",
     # Browsers only honour HSTS over HTTPS; it takes effect once deployed behind TLS.
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
 }
