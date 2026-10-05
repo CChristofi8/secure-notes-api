@@ -15,8 +15,6 @@ This write-up connects two pieces of work: solving the PortSwigger Web Security 
 3. Sent the request to Repeater and changed the number to `1.txt`.
 4. The server returned another user's chat transcript. It contained a password, which I used to log in as `carlos`.
 
-**What I noticed:** [YOUR OWN WORDS: one or two sentences on what tipped you off, for example the sequential number in the filename, or the file being served without any check on who was asking.]
-
 **Root cause:** the server trusted the identifier in the URL. It checked *what* was being requested, but not *who* was asking or whether they owned it. Sequential identifiers made the flaw trivial to exploit. A random identifier alone would not have fixed it, though, because the missing piece is the ownership check.
 
 ## 2. The fix: this repository
