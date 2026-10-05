@@ -11,11 +11,13 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Actions are pinned to full commit SHAs (tag in the comment), not mutable
+      # tags, so a repointed tag cannot inject code into this pipeline.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # full history, needed for secrets scanning
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
 
@@ -25,28 +27,33 @@ jobs:
       - name: Unit tests (including access control tests)
         run: pytest -v
 
+      # Security tools run in their own virtual environments so they cannot
+      # change the application's dependency versions.
       - name: SAST with Semgrep
         run: |
-          pip install semgrep
-          semgrep scan --config p/python --config p/owasp-top-ten --error
+          python -m venv /tmp/semgrep
+          /tmp/semgrep/bin/pip install -q semgrep
+          /tmp/semgrep/bin/semgrep scan --config p/python --config p/owasp-top-ten --error
 
       - name: Dependency vulnerability scan (pip-audit)
         run: |
-          pip install pip-audit
-          pip-audit -r requirements.txt
+          python -m venv /tmp/pip-audit
+          /tmp/pip-audit/bin/pip install -q pip-audit
+          /tmp/pip-audit/bin/pip-audit -r requirements.txt
 
       - name: Secrets scan (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate SBOM (CycloneDX)
         run: |
-          pip install cyclonedx-bom
-          cyclonedx-py requirements requirements.txt --of JSON -o sbom.json
+          python -m venv /tmp/cyclonedx
+          /tmp/cyclonedx/bin/pip install -q cyclonedx-bom
+          /tmp/cyclonedx/bin/cyclonedx-py requirements requirements.txt --of JSON -o sbom.json
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sbom
           path: sbom.json
