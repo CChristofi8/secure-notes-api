@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # Keeps the SHA-pinned GitHub Actions in .github/workflows up to date.
+  # Dependabot updates both the commit SHA and the version comment.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Keeps the pinned Python dependencies in requirements.txt up to date.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
